@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements BottomTabBar.OnSe
 
     private void initNavigationViewEvent() {
         //还原navigationview item原生的颜色
-        navigationView.setItemTextColor(null);
+//        navigationView.setItemTextColor(null);
 //        navigationView.setItemIconTintList(null);
         /**设置MenuItem默认选中项**/
         navigationView.getMenu().getItem(0).setChecked(true);
