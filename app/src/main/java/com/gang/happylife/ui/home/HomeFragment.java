@@ -40,6 +40,7 @@ public class HomeFragment extends MVPBaseFragment<HomeContract.View, HomePresent
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        //该句必须要加，否则会报错
         super.onCreateView(inflater, container, savedInstanceState);
         setContentView(R.layout.fragment_home);
         initView();

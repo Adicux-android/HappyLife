@@ -18,7 +18,10 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.CallAdapter;
+import retrofit2.Converter;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
@@ -26,53 +29,139 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 
 public class Api {
-    public static final String BASE_URL = "http://10.250.117.4/v1/";
-    public Retrofit retrofit;
-    public ApiService apiService;
-    Interceptor mInterceptor = ((chain -> chain.proceed(chain.request().newBuilder()
-            .addHeader("Content-Type", "application/json")
-            .build())));
+    public static String BASE_URL = "http://japi.juhe.cn/joke/";
+    public static String RANDOM_BASE_URL = "http://v.juhe.cn/joke/";
+    public static String BASE_WHEATHER = "http://op.juhe.cn/onebox/weather/";
+    public static String KEY = "fcc736b44a9f3ed587971eb62276ff0b";
+    public static String WKEY = "656da567f62a550f02a9b56843c0a75d";
 
-    //构造方法私有
-    private Api() {
-        //setLevel 改变日志级别
-        //共包含四个级别：NONE、BASIC、HEADER、BODY
-        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+    private static Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").serializeNulls().create();
+    private static Converter.Factory gsonConverterFactory = GsonConverterFactory.create(gson);
+    private static CallAdapter.Factory rxJavaCallAdapterFactory = RxJavaCallAdapterFactory.create();
+    private Retrofit retrofit;
+    private ApiService apiService;
+    private static OkHttpClient okHttpClient;
+    private static Api INSTANCE;
 
-        File cacheFile = new File(App.getAppContext().getCacheDir(), "cache");
-        Cache cache = new Cache(cacheFile, 1024 * 1024 * 100); //100Mb
 
-        OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                .readTimeout(7676, TimeUnit.MILLISECONDS)
-                .connectTimeout(7676, TimeUnit.MILLISECONDS)
-                .addInterceptor(mInterceptor)
-                .addInterceptor(interceptor)
-                .addNetworkInterceptor(new HttpCacheInterceptor())
-                .cache(cache)
-                .build();
+    /**
+     * 初始化okhttp
+     */
+    public static void initOkhttp() {
+        if (okHttpClient == null) {
+            Interceptor mInterceptor = ((chain -> chain.proceed(chain.request().newBuilder()
+                    .addHeader("Content-Type", "application/json")
+                    .build())));
+            //setLevel 改变日志级别
+            //共包含四个级别：NONE、BASIC、HEADER、BODY
+            HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+            interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+            File cacheFile = new File(App.getAppContext().getCacheDir(), "cache");
+            Cache cache = new Cache(cacheFile, 1024 * 1024 * 100); //100Mb
 
-        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").serializeNulls().create();
+            okHttpClient = new OkHttpClient.Builder()
+                    .readTimeout(7676, TimeUnit.MILLISECONDS)
+                    .connectTimeout(7676, TimeUnit.MILLISECONDS)
+                    .addInterceptor(mInterceptor)
+                    .addInterceptor(interceptor)
+                    .addNetworkInterceptor(new HttpCacheInterceptor())
+                    .cache(cache)
+                    .build();
+
+        }
+    }
+
+    /**
+     * 获取最新文本笑话
+     *
+     * @return
+     */
+    public void getTextJokeApi() {
+        initOkhttp();
         retrofit = new Retrofit.Builder()
-                .client(okHttpClient)
-                .addConverterFactory(GsonConverterFactory.create(gson))
-//                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .baseUrl(BASE_URL)
+                .client(okHttpClient)
+                .addConverterFactory(gsonConverterFactory)
+                .addCallAdapterFactory(rxJavaCallAdapterFactory)
                 .build();
         apiService = retrofit.create(ApiService.class);
     }
 
-    //在访问HttpMethods时创建单例
-    private static class SingletonHolder {
-        private static final Api INSTANCE = new Api();
+    /**
+     * 获取全部按时间文本笑话
+     *
+     * @return
+     */
+    public void getTimeTextJokeApi() {
+        initOkhttp();
+        retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .client(okHttpClient)
+                .addCallAdapterFactory(rxJavaCallAdapterFactory)
+                .addConverterFactory(gsonConverterFactory)
+                .build();
+        apiService = retrofit.create(ApiService.class);
+    }
+
+    /**
+     * 获取最新图片笑话
+     *
+     * @return
+     */
+    public void getImageJokeApi() {
+        initOkhttp();
+        retrofit = new Retrofit.Builder()
+                .baseUrl(RANDOM_BASE_URL)
+                .client(okHttpClient)
+                .addCallAdapterFactory(rxJavaCallAdapterFactory)
+                .addConverterFactory(gsonConverterFactory)
+                .build();
+        apiService = retrofit.create(ApiService.class);
+    }
+
+    /**
+     * 获取按时间排序的图片笑话
+     *
+     * @return
+     */
+    public void getTimeImageJokeApi() {
+        initOkhttp();
+        retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .client(okHttpClient)
+                .addCallAdapterFactory(rxJavaCallAdapterFactory)
+                .addConverterFactory(gsonConverterFactory)
+                .build();
+        apiService = retrofit.create(ApiService.class);
+    }
+
+    /**
+     * 获取天气数据
+     *
+     * @return
+     */
+    public void getWeatherApi() {
+        initOkhttp();
+        retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_WHEATHER)
+                .client(okHttpClient)
+                    .addCallAdapterFactory(rxJavaCallAdapterFactory)
+                .addConverterFactory(gsonConverterFactory)
+                .build();
+        apiService = retrofit.create(ApiService.class);
     }
 
     //获取单例
-    public static Api getInstance() {
-        return SingletonHolder.INSTANCE;
+    public static Api getInstance1() {
+        if(INSTANCE == null){
+            synchronized (Api.class){
+                INSTANCE = new Api();
+            }
+        }
+        return INSTANCE;
     }
 
-    class HttpCacheInterceptor implements Interceptor {
+    static class HttpCacheInterceptor implements Interceptor {
 
         @Override
         public Response intercept(Chain chain) throws IOException {

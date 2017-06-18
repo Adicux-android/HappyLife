@@ -1,8 +1,10 @@
 package com.gang.happylife.ui.newtextjoke;
 
-import android.content.Context;
-
+import com.gang.happylife.base.basebean.ApiResponseWraperNoData;
+import com.gang.happylife.bean.TextJokeBean;
 import com.gang.happylife.mvp.BasePresenterImpl;
+
+import rx.Observable;
 
 /**
  * MVPPlugin
@@ -10,5 +12,9 @@ import com.gang.happylife.mvp.BasePresenterImpl;
  */
 
 public class NewTextJokePresenter extends BasePresenterImpl<NewTextJokeContract.View> implements NewTextJokeContract.Presenter{
-    
+
+    @Override
+    public Observable<ApiResponseWraperNoData<TextJokeBean>> getNewTextJokeData() {
+        return null;
+    }
 }
