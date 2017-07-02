@@ -6,4 +6,5 @@
     <dimen name="font_normal">13sp</dimen>
     <dimen name="font_smalll">11sp</dimen>
     <dimen name="image_height">20dp</dimen>
+    <dimen name="font_middle">15sp</dimen>
 </resources>

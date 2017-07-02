@@ -76,15 +76,18 @@ public class Api {
      *
      * @return
      */
-    public void getTextJokeApi() {
+    public ApiService getTextJokeApi() {
         initOkhttp();
-        retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .client(okHttpClient)
-                .addConverterFactory(gsonConverterFactory)
-                .addCallAdapterFactory(rxJavaCallAdapterFactory)
-                .build();
-        apiService = retrofit.create(ApiService.class);
+        if (apiService == null){
+            retrofit = new Retrofit.Builder()
+                    .baseUrl(BASE_URL)
+                    .client(okHttpClient)
+                    .addConverterFactory(gsonConverterFactory)
+                    .addCallAdapterFactory(rxJavaCallAdapterFactory)
+                    .build();
+            apiService = retrofit.create(ApiService.class);
+        }
+        return apiService;
     }
 
     /**
@@ -152,7 +155,7 @@ public class Api {
     }
 
     //获取单例
-    public static Api getInstance1() {
+    public static Api getInstance() {
         if(INSTANCE == null){
             synchronized (Api.class){
                 INSTANCE = new Api();

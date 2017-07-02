@@ -1,6 +1,7 @@
 package com.gang.happylife.ui.newtextjoke;
 
 import com.gang.happylife.base.basebean.ApiResponseWraperNoData;
+import com.gang.happylife.base.baseparams.RequestParam;
 import com.gang.happylife.bean.TextJokeBean;
 import com.gang.happylife.mvp.BasePresenter;
 import com.gang.happylife.mvp.BaseView;
@@ -18,6 +19,6 @@ public class NewTextJokeContract {
     }
 
     interface  Presenter extends BasePresenter<View> {
-        Observable<ApiResponseWraperNoData<TextJokeBean>> getNewTextJokeData();
+        Observable<ApiResponseWraperNoData<TextJokeBean>> getNewTextJokeData(RequestParam param);
     }
 }
